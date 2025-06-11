@@ -6,7 +6,7 @@ phases:
       nodejs: 20
     commands:
       - echo "Installing dependencies and Serverless CLI..."
-      - npm install --production # 只安裝生產依賴
+      - npm install
       - npm install -g serverless # 安裝 Serverless CLI
       - serverless --version # 驗證 Serverless 安裝
   build:
@@ -15,8 +15,10 @@ phases:
       - mkdir -p dist
       - cp -r node_modules dist/ # 複製依賴到 dist 資料夾
       - cp -r handlers/*.js dist/ # 複製 Lambda 函數檔案
+      - cp serverless.yml dist/ # 複製 serverless.yml
       - cd dist
       - zip -r ../lambda-package.zip . # 打包為 .zip 檔案
+      - unzip -l ../lambda-package.zip # 調試：列出 .zip 內容
   post_build:
     commands:
       - echo "Build completed, ready for deployment."
