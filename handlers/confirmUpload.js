@@ -27,6 +27,7 @@ exports.confirmUpload = async (event) => {
                 fileName: { S: fileName },
                 imageUrl: { S: imageUrl },
                 uploadedAt: { S: new Date().toISOString() },
+                test: "123"
             }
         });
 
