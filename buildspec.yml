@@ -22,7 +22,7 @@ phases:
       - cp -r handlers/*.js dist/ # 複製 Lambda 函數檔案
       - cp serverless.yml dist/ # 複製 serverless.yml
       - cd dist
-      - zip -r ../lambda-package.zip . # 打包為 .zip 檔案
+      - zip -r ../lambda-package.zip . # 打包為 .zip
       - unzip -l ../lambda-package.zip # 調試：列出 .zip 內容
   post_build:
     commands:
