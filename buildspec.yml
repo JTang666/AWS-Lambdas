@@ -9,6 +9,8 @@ phases:
       - node -v # 驗證 Node.js 版本
       - npm -v # 驗證 npm 版本
       - ping -c 4 registry.npmjs.org # 測試網路連線
+      - rm -rf node_modules
+      - npm cache clean --force
       - npm install || { echo "npm install failed"; exit 1; } # 捕捉錯誤
       - npm install -g serverless # 安裝 Serverless CLI
       - serverless --version # 驗證 Serverless 安裝
