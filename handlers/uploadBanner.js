@@ -10,7 +10,7 @@ exports.getUploadUrl = async (event) => {
     try {
         const bucketName = process.env.BUCKET_NAME;
         const { fileName, fileType } = JSON.parse(event.body);
-        console.log('Generating pre-signed URL for:', fileName);
+        console.log('Generating pre-signed URL:', fileName);
         
         if(!fileName || !fileType){
             return{
