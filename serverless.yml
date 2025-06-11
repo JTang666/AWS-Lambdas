@@ -1,0 +1,70 @@
+# flow: 
+#  - s3 to generate pre-signed URL for uploading banner images
+#  - using pre-signed to upload images to DynamoDB
+
+service: bannerService
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  runtime: nodejs20.x
+  region: ap-southeast-2
+  environment:
+    BUCKET_NAME: banner-image-famous-jaytang-dev-123-new
+    DYNAMO_TABLE: Banners
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - s3:PutObject # Allow uploading to S3
+        - s3:GetObject
+      Resource: 
+        - arn:aws:s3:::banner-image-famous-jaytang-dev-123-new/*
+    # Allow DynamoDB access
+    - Effect: Allow
+      Action:
+        - dynamodb:PutItem # Allow writing to DynamoDB
+        - dynamodb:GetItem
+      Resource: 
+        - arn:aws:dynamodb:ap-southeast-2:785167821209:table/Banners
+
+resources:
+  Resources:
+    BannerImageBucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: banner-image-famous-jaytang-dev-123-new
+        CorsConfiguration:
+          CorsRules:
+            - AllowedHeaders:
+                - '*'
+              AllowedMethods:
+                - PUT
+              AllowedOrigins:
+                - '*'
+    BannersTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: Banners
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          - AttributeName: fileName
+            AttributeType: S   # String type for file names
+        KeySchema:
+          - AttributeName: fileName # Primary key for the table
+            KeyType: HASH
+
+functions:
+  getUploadUrl:
+    handler: handlers/uploadBanner.getUploadUrl
+    events:
+      - httpApi:
+          path: /upload-banner
+          method: post
+
+  confirmUpload:
+    handler: handlers/confirmUpload.confirmUpload
+    events:
+      - s3:
+          bucket: banner-image-famous-jaytang-dev-123-new
+          event: s3:ObjectCreated:Put
+          existing: true
