@@ -6,7 +6,10 @@ phases:
       nodejs: 20
     commands:
       - echo "Installing dependencies and Serverless CLI..."
-      - npm install
+      - node -v # 驗證 Node.js 版本
+      - npm -v # 驗證 npm 版本
+      - ping -c 4 registry.npmjs.org # 測試網路連線
+      - npm install || { echo "npm install failed"; exit 1; } # 捕捉錯誤
       - npm install -g serverless # 安裝 Serverless CLI
       - serverless --version # 驗證 Serverless 安裝
   build:
