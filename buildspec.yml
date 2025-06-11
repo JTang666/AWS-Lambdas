@@ -1,18 +1,27 @@
 version: 0.2
+
 phases:
   install:
     runtime-versions:
       nodejs: 20
     commands:
-      - npm install
-      - npm install -g serverless
+      - echo "Installing dependencies and Serverless CLI..."
+      - npm install --production # 只安裝生產依賴
+      - npm install -g serverless # 安裝 Serverless CLI
+      - serverless --version # 驗證 Serverless 安裝
   build:
     commands:
-      - serverless package --stage dev
+      - echo "Building Lambda package..."
+      - mkdir -p dist
+      - cp -r node_modules dist/ # 複製依賴到 dist 資料夾
+      - cp -r handlers/*.js dist/ # 複製 Lambda 函數檔案
+      - cd dist
+      - zip -r ../lambda-package.zip . # 打包為 .zip 檔案
   post_build:
     commands:
-      - serverless deploy --stage dev --region ap-southeast-2
+      - echo "Build completed, ready for deployment."
+
 artifacts:
   files:
-    - .serverless/*
-    - packaged-template.yaml
+    - lambda-package.zip
+  discard-paths: yes
