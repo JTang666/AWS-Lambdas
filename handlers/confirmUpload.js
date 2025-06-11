@@ -16,7 +16,7 @@ exports.confirmUpload = async (event) => {
         //Extract file details from S3 event notification
         const record = event.Records[0]; //Get first record
         //Extract the file Name  from s3 event
-        const fileName = record.s3.object.key + "123";
+        const fileName = record.s3.object.key;
         //Construct the public Url  for  the uploaded  file
         const imageUrl = `https://${bucketName}.s3.amazonaws.com/${fileName}`;
 
