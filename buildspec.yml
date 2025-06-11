@@ -6,29 +6,34 @@ phases:
       nodejs: 20
     commands:
       - echo "Installing dependencies and Serverless CLI..."
-      - node -v # 驗證 Node.js 版本
-      - npm -v # 驗證 npm 版本
-      - ping -c 4 registry.npmjs.org # 測試網路連線
+      - node -v
+      - npm -v
+      - ping -c 4 registry.npmjs.org
       - rm -rf node_modules
       - npm cache clean --force
-      - npm install || { echo "npm install failed"; exit 1; } # 捕捉錯誤
-      - npm install -g serverless # 安裝 Serverless CLI
-      - serverless --version # 驗證 Serverless 安裝
+      - npm install || { echo "npm install failed"; exit 1; }
+      - npm install -g serverless@3.38.0
+      - serverless --version
   build:
     commands:
       - echo "Building Lambda package..."
       - mkdir -p dist
-      - cp -r node_modules dist/ # 複製依賴到 dist 資料夾
-      - cp -r handlers/*.js dist/ # 複製 Lambda 函數檔案
-      - cp serverless.yml dist/ # 複製 serverless.yml
+      - cp -r node_modules dist/
+      - cp confirmUpload.js dist/
+      - cp uploadBanner.js dist/
       - cd dist
-      - zip -r ../lambda-package.zip . # 打包為 .zip
-      - unzip -l ../lambda-package.zip # 調試：列出 .zip 內容
+      - zip -r ../lambda-package.zip .
+      - unzip -l ../lambda-package.zip
   post_build:
     commands:
+      - echo "Verifying ZIP contents..."
+      - unzip -l lambda-package.zip | grep "node_modules" || { echo "node_modules missing in ZIP"; exit 1; }
+      - unzip -l lambda-package.zip | grep "confirmUpload.js" || { echo "confirmUpload.js missing in ZIP"; exit 1; }
+      - unzip -l lambda-package.zip | grep "uploadBanner.js" || { echo "uploadBanner.js missing in ZIP"; exit 1; }
       - echo "Build completed, ready for deployment."
 
 artifacts:
   files:
     - lambda-package.zip
+    - serverless.yml
   discard-paths: yes
