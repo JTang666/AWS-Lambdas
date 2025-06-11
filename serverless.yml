@@ -9,6 +9,7 @@ provider:
   name: aws
   runtime: nodejs20.x
   region: ap-southeast-2
+  stage: dev
   environment:
     BUCKET_NAME: banner-image-famous-jaytang-dev-123-new
     DYNAMO_TABLE: Banners
